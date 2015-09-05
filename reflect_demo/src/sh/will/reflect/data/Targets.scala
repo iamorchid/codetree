@@ -4,7 +4,12 @@ package sh.will.reflect.data
  * @author will
  */
 object Targets {
-  val dummyName = "TargetName"
+  
+  type MyInt = Int
+  
+  val valName = "ConstantName"
+  
+  var varName = "ChangeableName"
 
   /**
    * Action that could be applied to targetable object
