@@ -9,14 +9,25 @@ import scala.collection.mutable.{ ListBuffer, Stack }
  */
 object MacroUtils {
 
-  def echo(msg: String): Unit = macro echo_impl
+  def echo(expr: Any): String = macro echo_impl
 
-  def echo_impl(c: Context)(msg: c.Expr[String]): c.Expr[Unit] = {
+  def echo_impl(c: Context)(expr: c.Expr[Any]): c.Expr[String] = {
     import c.universe._
 
-    val tree = reify(println(msg.splice)).tree
+    val tree = Literal(Constant(showRaw(expr.tree) + ":" + showCode(expr.tree)))
 
-    c.Expr[Unit](tree)
+    c.Expr[String](tree)
+  }
+
+  def printArg(expr: Any): Unit = macro printArg_impl
+
+  def printArg_impl(c: Context)(expr: c.Expr[Any]): c.Expr[Unit] = {
+    import c.universe._
+
+    val name = showCode(expr.tree)
+    val nameTree = c.Expr[String](Literal(Constant(name)))
+    
+    c.Expr[Unit](reify({ println(nameTree.splice + ": " + expr.splice) }).tree)
   }
 
   def printf(format: String, params: Any*): Unit = macro printf_impl
